@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mehir Hesaplama | Senin Mehrin Ne Kadar? 💍</title>
+  <meta name="description" content="Eğlenceli mehir hesaplama uygulaması! Fiziksel, demografik, eğitim ve karakter özelliklerine göre mehir miktarını gram altın cinsinden hesapla.">
+  
+  <!-- OG Tags for Social Sharing -->
+  <meta property="og:title" content="Mehir Hesaplama | Senin Mehrin Ne Kadar? 💍">
+  <meta property="og:description" content="Eğlenceli mehir hesaplama! Özelliklerini gir, senin değerini altın cinsinden öğren!">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="tr_TR">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Mehir Hesaplama | Senin Mehrin Ne Kadar? 💍">
+  <meta name="twitter:description" content="Eğlenceli mehir hesaplama! Özelliklerini gir, senin değerini altın cinsinden öğren!">
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Sparkle Background -->
+  <div class="sparkle-container"></div>
+
+  <div class="app-container">
+
+    <!-- ===================== LANDING SCREEN ===================== -->
+    <div id="screen-landing" class="screen landing-screen active">
+      <div class="landing-icon">💍</div>
+      <h1 class="landing-title">
+        Senin <span class="gold-text">Mehrin</span><br>Ne Kadar?
+      </h1>
+      <p class="subtitle landing-description">
+        Fiziksel, demografik, eğitim ve karakter özelliklerine göre mehir miktarını gram altın cinsinden hesapla!
+      </p>
+      <button id="btn-start" class="btn-primary">
+        ✨ Hesaplamaya Başla
+      </button>
+
+      <!-- Landing Leaderboard -->
+      <div class="landing-leaderboard">
+        <div id="landing-leaderboard-container"></div>
+      </div>
+
+      <p class="disclaimer">
+        Bu uygulama tamamen eğlence amaçlıdır. Gerçek bir mehir belirleme aracı değildir.
+        <br>Herhangi bir dini veya hukuki bağlayıcılığı yoktur.
+      </p>
+    </div>
+
+
+    <!-- ===================== GENDER SCREEN ===================== -->
+    <div id="screen-gender" class="screen landing-screen">
+      <div class="landing-icon">👤</div>
+      <h2 class="landing-title" style="font-size:1.6rem">
+        <span class="gold-text">Cinsiyetini</span> Seç
+      </h2>
+      <p class="subtitle landing-description">
+        Kadınsan kendi mehrin hesaplanır. Erkeksen evlenmek istediğin kadının mehri hesaplanır.
+      </p>
+      <div class="gender-buttons">
+        <button id="btn-gender-female" class="btn-gender">
+          <span class="gender-icon">👩</span>
+          <span class="gender-label">Kadınım</span>
+          <span class="gender-desc">Kendi mehrim hesaplansın</span>
+        </button>
+        <button id="btn-gender-male" class="btn-gender">
+          <span class="gender-icon">👨</span>
+          <span class="gender-label">Erkeğim</span>
+          <span class="gender-desc">Evleneceğim kadın için hesaplansın</span>
+        </button>
+      </div>
+    </div>
+
+
+    <!-- ===================== NAME SCREEN (Female) ===================== -->
+    <div id="screen-name" class="screen landing-screen">
+      <div class="landing-icon">✍️</div>
+      <h2 class="landing-title" style="font-size:1.6rem">
+        <span class="gold-text">Adını</span> Gir
+      </h2>
+      <p class="subtitle landing-description">
+        Leaderboard'da görünecek ismin
+      </p>
+      <div class="name-input-wrapper">
+        <input type="text" id="input-user-name" class="name-input" placeholder="Adınız..." maxlength="20" autocomplete="off">
+      </div>
+      <button id="btn-name-next" class="btn-primary" disabled>
+        Devam →
+      </button>
+    </div>
+
+
+    <!-- ===================== MALE ONBOARD SCREEN ===================== -->
+    <div id="screen-onboard" class="screen">
+      <div class="step-header" style="text-align:center; margin-top:var(--space-xl)">
+        <span class="step-emoji">🎯</span>
+        <h2>Önce <span class="gold-text">Seni</span> Tanıyalım</h2>
+        <p class="subtitle">Tercihlerini bilmemiz lazım ki mehri sana göre hesaplayalım</p>
+      </div>
+
+      <div class="step-content" style="margin-top:var(--space-lg)">
+
+        <!-- Q1: Priority -->
+        <div class="form-group">
+          <label class="form-label">
+            <span class="label-emoji">⚖️</span> Sende ne ağır basıyor?
+          </label>
+          <div class="chip-group" id="chips-pref-priority">
+            <div class="chip selected" data-value="fiziksel">💃 Dış Görünüş</div>
+            <div class="chip" data-value="egitim">📚 Eğitim & Kariyer</div>
+            <div class="chip" data-value="din">🕌 Dindarlık & Ahlak</div>
+            <div class="chip" data-value="aile">👨‍👩‍👧‍👦 Aile & Soy</div>
+          </div>
+        </div>
+
+        <!-- Q2: Body type -->
+        <div class="form-group">
+          <label class="form-label">
+            <span class="label-emoji">🏋️</span> Vücut tipi tercihin?
+          </label>
+          <div class="chip-group" id="chips-pref-body">
+            <div class="chip" data-value="ince">🦴 İnce / Fit</div>
+            <div class="chip" data-value="dolgun">🍑 Dolgun / Balık Etli</div>
+            <div class="chip selected" data-value="farketmez">🤷 Farketmez</div>
+          </div>
+        </div>
+
+        <!-- Q3: Appearance style -->
+        <div class="form-group">
+          <label class="form-label">
+            <span class="label-emoji">💅</span> Hangi tarz seni eritir?
+          </label>
+          <div class="chip-group" id="chips-pref-style">
+            <div class="chip" data-value="sarisin">👱‍♀️ Sarışın / Açık Tenli</div>
+            <div class="chip" data-value="esmer">🖤 Esmer / Koyu</div>
+            <div class="chip" data-value="egzotik">🧡 Kızıl / Egzotik</div>
+            <div class="chip selected" data-value="farketmez">🤷 Farketmez</div>
+          </div>
+        </div>
+
+        <!-- Q4: Conservatism level -->
+        <div class="form-group">
+          <label class="form-label">
+            <span class="label-emoji">📿</span> Ne kadar muhafazakârsın?
+          </label>
+          <div class="chip-group" id="chips-pref-conserv">
+            <div class="chip" data-value="cok">🕌 Çok Muhafazakâr</div>
+            <div class="chip selected" data-value="orta">⚖️ Orta Yol</div>
+            <div class="chip" data-value="modern">🌍 Modern</div>
+          </div>
+        </div>
+
+
+        <!-- Partner Name (Male only) -->
+        <div class="form-group">
+          <label class="form-label">
+            <span class="label-emoji">💍</span> Evlenmek istediğin kadının adı
+          </label>
+          <input type="text" id="input-partner-name" class="name-input" placeholder="Adı..." maxlength="20" autocomplete="off" style="width:100%">
+          <p class="form-hint">Leaderboard'da bu isim görünecek</p>
+        </div>
+
+      </div>
+
+      <div class="btn-nav" style="margin-top:var(--space-xl)">
+        <button id="btn-onboard-back" class="btn-secondary">← Geri</button>
+        <button id="btn-onboard-next" class="btn-primary">Kadını Tanımla →</button>
+      </div>
+    </div>
+
+
+    <!-- ===================== WIZARD SCREEN ===================== -->
+    <div id="screen-wizard" class="screen">
+      
+      <!-- Progress Bar -->
+      <div class="progress-bar">
+        <div class="progress-step active" data-step="0"></div>
+        <div class="progress-step" data-step="1"></div>
+        <div class="progress-step" data-step="2"></div>
+        <div class="progress-step" data-step="3"></div>
+      </div>
+
+      <!-- ---- STEP 1: Physical ---- -->
+      <div class="wizard-step active" data-step="0">
+        <div class="step-header">
+          <span class="step-number">ADIM 1/4</span>
+          <span class="step-emoji">💃</span>
+          <h2>Fiziksel <span class="gold-text">Özellikler</span></h2>
+          <p class="subtitle" data-label-female="Boy, kilo, yüz ve dış görünüş" data-label-male="Evlenmek istediğin kadının fiziksel özellikleri">Boy, kilo, yüz ve dış görünüş</p>
+        </div>
+        
+        <div class="step-content">
+          <!-- Age Slider -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">🎂</span> <span data-label-female="Yaş" data-label-male="Yaşı">Yaş</span>
+            </label>
+            <div class="slider-container">
+              <div class="slider-value" id="val-age">25</div>
+              <input type="range" id="slider-age" min="18" max="60" value="25" data-suffix=" yaş">
+              <div class="slider-range">
+                <span>18</span>
+                <span>60</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Height & Weight -->
+          <div class="input-row">
+            <div class="form-group">
+              <label class="form-label">
+                <span class="label-emoji">📏</span> <span data-label-female="Boy" data-label-male="Boyu">Boy</span>
+              </label>
+              <input type="number" id="input-height" class="number-input" placeholder="165" min="140" max="200">
+              <span class="input-unit">cm</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <span class="label-emoji">⚖️</span> <span data-label-female="Kilo" data-label-male="Kilosu">Kilo</span>
+              </label>
+              <input type="number" id="input-weight" class="number-input" placeholder="60" min="35" max="150">
+              <span class="input-unit">kg</span>
+            </div>
+          </div>
+
+          <!-- BMI Display -->
+          <div id="bmi-display" class="bmi-display" style="display:none">
+            <div>
+              <div class="bmi-label">BMI</div>
+              <div class="bmi-value" id="bmi-val">—</div>
+            </div>
+            <span id="bmi-cat" class="bmi-category">—</span>
+          </div>
+
+          <!-- Face Rating Slider -->
+          <div class="form-group mt-lg">
+            <label class="form-label">
+              <span class="label-emoji">😊</span> <span data-label-female="Yüz Güzelliği (Kendin Puanla)" data-label-male="Yüz Güzelliği">Yüz Güzelliği (Kendin Puanla)</span>
+            </label>
+            <div class="slider-container">
+              <div class="slider-value">5</div>
+              <input type="range" id="slider-face" min="1" max="10" value="5" data-suffix="/10">
+              <div class="slider-range">
+                <span>1 – Pek değil 😅</span>
+                <span>10 – Model 🔥</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Breast Size Slider -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">👙</span> <span data-label-female="Göğüs Boyutu" data-label-male="Göğüs Boyutu">Göğüs Boyutu</span>
+            </label>
+            <div class="chip-group" id="chips-breast">
+              <div class="chip" data-value="tahta">Tahta</div>
+              <div class="chip" data-value="kucuk">Küçük</div>
+              <div class="chip selected" data-value="ortalama">Ortalama</div>
+              <div class="chip" data-value="buyuk">Büyük</div>
+              <div class="chip" data-value="devasa">Devasa</div>
+            </div>
+          </div>
+
+          <!-- Shoe Size -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">👠</span> <span data-label-female="Ayak Numarası" data-label-male="Ayak Numarası">Ayak Numarası</span>
+            </label>
+            <div class="chip-group" id="chips-shoe">
+              <div class="chip" data-value="35">35</div>
+              <div class="chip" data-value="36">36</div>
+              <div class="chip selected" data-value="36.5">36.5</div>
+              <div class="chip" data-value="37">37</div>
+              <div class="chip" data-value="38">38</div>
+              <div class="chip" data-value="39">39</div>
+              <div class="chip" data-value="40plus">40+</div>
+            </div>
+          </div>
+
+          <!-- Hair Color -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">💇‍♀️</span> <span data-label-female="Saç Rengi" data-label-male="Saç Rengi">Saç Rengi</span>
+            </label>
+            <div class="chip-group" id="chips-hair">
+              <div class="chip" data-value="siyah">🖤 Siyah</div>
+              <div class="chip selected" data-value="koyu_kahve">🤎 Koyu Kahve</div>
+              <div class="chip" data-value="kumral">👩 Kumral</div>
+              <div class="chip" data-value="kestane">🌰 Kestane</div>
+              <div class="chip" data-value="sari">👱‍♀️ Sarı</div>
+              <div class="chip" data-value="kizil">🧡 Kızıl</div>
+            </div>
+          </div>
+
+          <!-- Eye Color -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">👁️</span> <span data-label-female="Göz Rengi" data-label-male="Göz Rengi">Göz Rengi</span>
+            </label>
+            <div class="chip-group" id="chips-eye">
+              <div class="chip selected" data-value="kahve">🟤 Kahve</div>
+              <div class="chip" data-value="siyah">⚫ Siyah</div>
+              <div class="chip" data-value="ela">🫒 Ela</div>
+              <div class="chip" data-value="yesil">🟢 Yeşil</div>
+              <div class="chip" data-value="mavi">🔵 Mavi</div>
+            </div>
+          </div>
+
+          <!-- Skin Tone -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">🎨</span> <span data-label-female="Ten Rengi" data-label-male="Ten Rengi">Ten Rengi</span>
+            </label>
+            <div class="chip-group" id="chips-skin">
+              <div class="chip" data-value="acik">🤍 Açık</div>
+              <div class="chip selected" data-value="bugday">🌾 Buğday</div>
+              <div class="chip" data-value="esmer">🤎 Esmer</div>
+              <div class="chip" data-value="koyu">🖤 Koyu</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ---- STEP 2: Demographic ---- -->
+      <div class="wizard-step" data-step="1">
+        <div class="step-header">
+          <span class="step-number">ADIM 2/4</span>
+          <span class="step-emoji">📋</span>
+          <h2>Demografik <span class="gold-text">Bilgiler</span></h2>
+          <p class="subtitle" data-label-female="Evlilik geçmişi ve durum" data-label-male="Evlenmek istediğin kadının durumu">Evlilik geçmişi ve durum</p>
+        </div>
+        
+        <div class="step-content">
+          <!-- Virginity -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">💎</span> <span data-label-female="Bakirelik" data-label-male="Bakire mi?">Bakirelik</span>
+            </label>
+            <div class="chip-group" id="chips-virginity">
+              <div class="chip selected" data-value="evet">✅ Evet</div>
+              <div class="chip male-only hidden" data-value="insallah">🙏 İnşallah</div>
+              <div class="chip" data-value="hayir">❌ Hayır</div>
+            </div>
+            <p class="form-hint">İslami gelenekte önemli bir kriter olduğu için sorulmaktadır</p>
+          </div>
+
+          <!-- Marriage History -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">💒</span> <span data-label-female="Evlilik Durumu" data-label-male="Evlilik Durumu">Evlilik Durumu</span>
+            </label>
+            <div class="chip-group" id="chips-marriage">
+              <div class="chip selected" data-value="ilk">💍 İlk Evlilik</div>
+              <div class="chip" data-value="ikinci">🔄 2. Evlilik</div>
+              <div class="chip" data-value="ucuncu_plus">🔁 3. veya daha fazla</div>
+            </div>
+          </div>
+
+          <!-- Children -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">👶</span> <span data-label-female="Önceki Evlilikten Çocuk Sayısı" data-label-male="Önceki Evlilikten Çocuk Sayısı">Önceki Evlilikten Çocuk Sayısı</span>
+            </label>
+            <div class="chip-group" id="chips-children">
+              <div class="chip selected" data-value="0">Yok</div>
+              <div class="chip" data-value="1">1 Çocuk</div>
+              <div class="chip" data-value="2">2 Çocuk</div>
+              <div class="chip" data-value="3">3+ Çocuk</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ---- STEP 3: Education & Career ---- -->
+      <div class="wizard-step" data-step="2">
+        <div class="step-header">
+          <span class="step-number">ADIM 3/4</span>
+          <span class="step-emoji">🎓</span>
+          <h2>Eğitim & <span class="gold-text">Kariyer</span></h2>
+          <p class="subtitle" data-label-female="Eğitim seviyesi, meslek ve gelir" data-label-male="Evlenmek istediğin kadının eğitim ve kariyeri">Eğitim seviyesi, meslek ve gelir</p>
+        </div>
+        
+        <div class="step-content">
+          <!-- Education Level -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">📚</span> <span data-label-female="Eğitim Seviyesi" data-label-male="Eğitim Seviyesi">Eğitim Seviyesi</span>
+            </label>
+            <div class="chip-group" id="chips-education">
+              <div class="chip" data-value="ilkokul">İlkokul</div>
+              <div class="chip" data-value="ortaokul">Ortaokul</div>
+              <div class="chip" data-value="lise">Lise</div>
+              <div class="chip" data-value="onlisans">Ön Lisans</div>
+              <div class="chip selected" data-value="lisans">Lisans</div>
+              <div class="chip" data-value="yuksek_lisans">Yüksek Lisans</div>
+              <div class="chip" data-value="doktora">Doktora 🎓</div>
+            </div>
+          </div>
+
+          <!-- Occupation -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">💼</span> <span data-label-female="Meslek Durumu" data-label-male="Meslek Durumu">Meslek Durumu</span>
+            </label>
+            <div class="chip-group" id="chips-occupation">
+              <div class="chip" data-value="calismayan">Çalışmıyor</div>
+              <div class="chip" data-value="ogrenci">🎒 Öğrenci</div>
+              <div class="chip selected" data-value="calisan">💼 Çalışan</div>
+              <div class="chip" data-value="profesyonel">⚕️ Profesyonel</div>
+              <div class="chip" data-value="isveren">🏢 İşveren</div>
+            </div>
+          </div>
+
+          <!-- Income Slider -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">💰</span> <span data-label-female="Aylık Gelir" data-label-male="Aylık Geliri">Aylık Gelir</span>
+            </label>
+            <div class="slider-container">
+              <div class="slider-value">30.000 ₺</div>
+              <input type="range" id="slider-income" min="0" max="200000" value="30000" step="5000" data-suffix=" ₺" data-prefix="">
+              <div class="slider-range">
+                <span>₺0</span>
+                <span>₺200.000+</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ---- STEP 4: Character & Values ---- -->
+      <div class="wizard-step" data-step="3">
+        <div class="step-header">
+          <span class="step-number">ADIM 4/4</span>
+          <span class="step-emoji">🌟</span>
+          <h2>Karakter & <span class="gold-text">Değerler</span></h2>
+          <p class="subtitle" data-label-female="Dindarlık, ahlak ve kişilik" data-label-male="Evlenmek istediğin kadının karakteri">Dindarlık, ahlak ve kişilik</p>
+        </div>
+        
+        <div class="step-content">
+          <!-- Religion -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">🕌</span> <span data-label-female="Dindarlık" data-label-male="Dindarlığı">Dindarlık</span>
+            </label>
+            <div class="slider-container">
+              <div class="slider-value">5/10</div>
+              <input type="range" id="slider-religion" min="1" max="10" value="5" data-suffix="/10">
+              <div class="slider-range">
+                <span>1 – Laik</span>
+                <span>10 – Çok dindar</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Housekeeping -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">🏠</span> <span data-label-female="Ev Hanımlığı Becerisi" data-label-male="Ev Hanımlığı Becerisi">Ev Hanımlığı Becerisi</span>
+            </label>
+            <div class="slider-container">
+              <div class="slider-value">5/10</div>
+              <input type="range" id="slider-housekeeping" min="1" max="10" value="5" data-suffix="/10">
+              <div class="slider-range">
+                <span>1 – Yumurta bile yakar 🍳</span>
+                <span>10 – MasterChef 👨‍🍳</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Morals -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">💫</span> <span data-label-female="Ahlak & Karakter" data-label-male="Ahlak & Karakter">Ahlak & Karakter</span>
+            </label>
+            <div class="slider-container">
+              <div class="slider-value">5/10</div>
+              <input type="range" id="slider-morals" min="1" max="10" value="5" data-suffix="/10">
+              <div class="slider-range">
+                <span>1 – Gelişime açık 😬</span>
+                <span>10 – Melek 😇</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sociality -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">🤝</span> <span data-label-female="Sosyallik" data-label-male="Sosyalliği">Sosyallik</span>
+            </label>
+            <div class="slider-container">
+              <div class="slider-value">5/10</div>
+              <input type="range" id="slider-sociality" min="1" max="10" value="5" data-suffix="/10">
+              <div class="slider-range">
+                <span>1 – İçine kapanık 🤫</span>
+                <span>10 – Hayat enerjisi 🎉</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Family Background -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">👨‍👩‍👧‍👦</span> <span data-label-female="Aile Arka Planı" data-label-male="Aile Arka Planı">Aile Arka Planı</span>
+            </label>
+            <div class="chip-group" id="chips-family">
+              <div class="chip" data-value="dusuk">Mütevazı</div>
+              <div class="chip selected" data-value="orta">Orta Sınıf</div>
+              <div class="chip" data-value="yuksek">Üst Sınıf</div>
+              <div class="chip" data-value="cok_yuksek">👑 Elit</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Navigation Buttons -->
+      <div class="btn-nav">
+        <button id="btn-prev" class="btn-secondary" style="display:none">← Geri</button>
+        <button id="btn-next" class="btn-primary">Devam →</button>
+      </div>
+    </div>
+
+
+    <!-- ===================== RESULTS SCREEN ===================== -->
+    <div id="screen-results" class="screen results-screen">
+      
+      <!-- Tier Badge -->
+      <div id="result-tier" class="result-tier-badge gold">
+        🥇 Altın Seviye
+      </div>
+
+      <!-- Main Value -->
+      <div class="result-main-value">
+        <div id="result-grams" class="result-gram">0</div>
+        <div class="result-gram-label">gram altın</div>
+        <div id="result-tl" class="result-tl">≈ ₺0</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Comment -->
+      <div class="result-comment">
+        <span class="comment-emoji">💬</span>
+        <p id="result-comment-text">Yükleniyor...</p>
+      </div>
+
+
+      <!-- Category Breakdown -->
+      <div class="category-breakdown">
+        <h3>📊 Kategori Dağılımı</h3>
+        
+        <div class="category-bar">
+          <span class="category-bar-label">💃 Fiziksel</span>
+          <div class="category-bar-track">
+            <div class="category-bar-fill" id="bar-physical" style="width:0%"></div>
+          </div>
+          <span class="category-bar-value" id="val-physical">0%</span>
+        </div>
+        
+        <div class="category-bar">
+          <span class="category-bar-label">📋 Demografik</span>
+          <div class="category-bar-track">
+            <div class="category-bar-fill" id="bar-demographic" style="width:0%"></div>
+          </div>
+          <span class="category-bar-value" id="val-demographic">0%</span>
+        </div>
+        
+        <div class="category-bar">
+          <span class="category-bar-label">🎓 Eğitim</span>
+          <div class="category-bar-track">
+            <div class="category-bar-fill" id="bar-education" style="width:0%"></div>
+          </div>
+          <span class="category-bar-value" id="val-education">0%</span>
+        </div>
+        
+        <div class="category-bar">
+          <span class="category-bar-label">🌟 Karakter</span>
+          <div class="category-bar-track">
+            <div class="category-bar-fill" id="bar-character" style="width:0%"></div>
+          </div>
+          <span class="category-bar-value" id="val-character">0%</span>
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="leaderboard-section">
+        <div id="leaderboard-container"></div>
+      </div>
+
+      <!-- Share -->
+      <div class="share-section">
+        <div class="share-buttons">
+          <button id="share-native" class="share-btn native">📤 Paylaş</button>
+        </div>
+      </div>
+
+      <!-- Profile -->
+      <div class="profile-section">
+        <button id="btn-edit-profile" class="btn-profile">✏️ Profilini Düzenle</button>
+        <p class="profile-hint">Sosyal medya hesaplarını ekle, leaderboard'da görün!</p>
+      </div>
+
+      <!-- Profile Modal -->
+      <div id="profile-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3>✏️ Profilini Düzenle</h3>
+            <button id="modal-close" class="modal-close-btn">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="modal-field">
+              <label>📧 E-posta</label>
+              <input type="email" id="input-email" class="modal-input" placeholder="ornek@mail.com" maxlength="60">
+            </div>
+            <div class="modal-field">
+              <label>📷 Instagram</label>
+              <div class="modal-input-prefix">
+                <span>@</span>
+                <input type="text" id="input-instagram" class="modal-input" placeholder="kullaniciadi" maxlength="30">
+              </div>
+            </div>
+            <div class="modal-field">
+              <label>𝕏 X (Twitter)</label>
+              <div class="modal-input-prefix">
+                <span>@</span>
+                <input type="text" id="input-twitter" class="modal-input" placeholder="kullaniciadi" maxlength="30">
+              </div>
+            </div>
+            <div class="modal-field">
+              <label>🎵 TikTok</label>
+              <div class="modal-input-prefix">
+                <span>@</span>
+                <input type="text" id="input-tiktok" class="modal-input" placeholder="kullaniciadi" maxlength="30">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="btn-save-profile" class="btn-primary">💾 Kaydet</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Restart -->
+      <div class="restart-section">
+        <button id="btn-restart" class="btn-secondary">🔄 Tekrar Hesapla</button>
+      </div>
+
+      <p class="disclaimer mt-xl">
+        Bu sonuç tamamen eğlence amaçlıdır. Gerçek bir mehir değerlendirmesi değildir.
+        <br>Hiçbir dini veya hukuki bağlayıcılığı yoktur.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Scripts -->
+  <script src="js/calculator.js"></script>
+  <script src="js/chart.js"></script>
+  <script src="js/sharecard.js"></script>
+  <script src="js/leaderboard.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
