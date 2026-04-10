@@ -20,13 +20,22 @@ const Leaderboard = (() => {
   }
 
   // Save a score to leaderboard
-  async function saveScore(name, score, tier, gender) {
+  async function saveScore(name, score, tier, gender, profileData) {
     if (!supabase) return null;
 
     try {
+      const record = { name, score, tier, gender };
+      // Include profile data if provided
+      if (profileData) {
+        if (profileData.email) record.email = profileData.email;
+        if (profileData.instagram) record.instagram = profileData.instagram;
+        if (profileData.twitter) record.twitter = profileData.twitter;
+        if (profileData.tiktok) record.tiktok = profileData.tiktok;
+      }
+
       const { data, error } = await supabase
         .from('leaderboard')
-        .insert([{ name, score, tier, gender }])
+        .insert([record])
         .select()
         .single();
 
@@ -43,6 +52,8 @@ const Leaderboard = (() => {
   }
 
   // Update profile (social links + email) for the last saved record
+  // DB trigger prevents changing core fields (name/score/tier/gender)
+  // and prevents overwriting already-set social fields
   async function updateProfile(profileData) {
     if (!supabase || !lastRecordId) return false;
 
