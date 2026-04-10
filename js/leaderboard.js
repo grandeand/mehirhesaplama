@@ -136,24 +136,35 @@ const Leaderboard = (() => {
     }
   }
 
+  // --- SECURITY: XSS Prevention ---
+  function escapeHTML(str) {
+    if (!str) return '';
+    return str.toString()
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   // Build social links HTML
   function socialLinksHTML(entry) {
     let links = '';
-    if (entry.instagram) links += `<a href="https://instagram.com/${entry.instagram}" target="_blank" class="lb-social" title="@${entry.instagram}">📷</a>`;
-    if (entry.twitter) links += `<a href="https://x.com/${entry.twitter}" target="_blank" class="lb-social" title="@${entry.twitter}">𝕏</a>`;
-    if (entry.tiktok) links += `<a href="https://tiktok.com/@${entry.tiktok}" target="_blank" class="lb-social" title="@${entry.tiktok}">🎵</a>`;
+    if (entry.instagram) links += `<a href="https://instagram.com/${escapeHTML(entry.instagram)}" target="_blank" class="lb-social" title="@${escapeHTML(entry.instagram)}">📷</a>`;
+    if (entry.twitter) links += `<a href="https://x.com/${escapeHTML(entry.twitter)}" target="_blank" class="lb-social" title="@${escapeHTML(entry.twitter)}">𝕏</a>`;
+    if (entry.tiktok) links += `<a href="https://tiktok.com/@${escapeHTML(entry.tiktok)}" target="_blank" class="lb-social" title="@${escapeHTML(entry.tiktok)}">🎵</a>`;
     return links;
   }
 
   // Build clickable name HTML based on social link count
   function nameHTML(entry) {
     const socials = [];
-    if (entry.instagram) socials.push({ platform: '📷 Instagram', url: `https://instagram.com/${entry.instagram}`, user: entry.instagram });
-    if (entry.twitter) socials.push({ platform: '𝕏 X', url: `https://x.com/${entry.twitter}`, user: entry.twitter });
-    if (entry.tiktok) socials.push({ platform: '🎵 TikTok', url: `https://tiktok.com/@${entry.tiktok}`, user: entry.tiktok });
+    if (entry.instagram) socials.push({ platform: '📷 Instagram', url: `https://instagram.com/${escapeHTML(entry.instagram)}`, user: escapeHTML(entry.instagram) });
+    if (entry.twitter) socials.push({ platform: '𝕏 X', url: `https://x.com/${escapeHTML(entry.twitter)}`, user: escapeHTML(entry.twitter) });
+    if (entry.tiktok) socials.push({ platform: '🎵 TikTok', url: `https://tiktok.com/@${escapeHTML(entry.tiktok)}`, user: escapeHTML(entry.tiktok) });
 
     const badges = socialLinksHTML(entry);
-    const nameText = `👩 ${entry.name}`;
+    const nameText = `👩 ${escapeHTML(entry.name)}`;
 
     if (socials.length === 0) {
       // No links — plain name
@@ -164,7 +175,7 @@ const Leaderboard = (() => {
     } else {
       // Multiple links — name opens a popup
       const dataLinks = encodeURIComponent(JSON.stringify(socials));
-      return `<span class="lb-name lb-name-link" data-socials="${dataLinks}" onclick="Leaderboard.showSocialPopup(this, '${entry.name}')">${nameText} ${badges}</span>`;
+      return `<span class="lb-name lb-name-link" data-socials="${dataLinks}" onclick="Leaderboard.showSocialPopup(this, '${escapeHTML(entry.name).replace(/'/g, "\\'")}')">${nameText} ${badges}</span>`;
     }
   }
 
