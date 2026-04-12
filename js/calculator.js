@@ -5,13 +5,34 @@
 
 const MehirCalculator = (() => {
 
-  // Base amount: 30 gram gold (Hanefi minimum)
   const BASE_GOLD_GRAMS = 30;
-  const MAX_GOLD_GRAMS = 5000;
+  const MAX_GOLD_GRAMS = 1500;
   const MIN_GOLD_GRAMS = 30;
 
-  // Current gold price per gram (TL) - can be updated
-  const GOLD_PRICE_PER_GRAM = 3500;
+  // Gold price per gram (TL) - fetched dynamically, fallback to static
+  let GOLD_PRICE_PER_GRAM = 6800;
+  let _goldPricePromise = null;
+
+  async function fetchGoldPrice() {
+    try {
+      const res = await fetch('https://finans.truncgil.com/today.json');
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      const price = data?.['gram-altin']?.Alış;
+      if (price) {
+        GOLD_PRICE_PER_GRAM = Math.round(parseFloat(price.replace(/\./g, '').replace(',', '.')));
+      }
+    } catch {
+      // Keep fallback value
+    }
+  }
+
+  function initGoldPrice() {
+    if (!_goldPricePromise) {
+      _goldPricePromise = fetchGoldPrice();
+    }
+    return _goldPricePromise;
+  }
 
   // ---- COEFFICIENT TABLES ----
 
@@ -155,7 +176,9 @@ const MehirCalculator = (() => {
     if (income < 40000) return 1.0;
     if (income < 70000) return 1.1;
     if (income < 100000) return 1.2;
-    return 1.3;
+    if (income < 200000) return 1.3;
+    if (income < 350000) return 1.4;
+    return 1.5;
   }
 
   // Slider-based ratings (1-10) → coefficient mapping
@@ -217,7 +240,7 @@ const MehirCalculator = (() => {
       childrenScore * 0.20
     );
 
-    return { score, details: { virginityScore, marriageScore, childrenScore } };
+    return { score, hasTattoo: data.tattoo === 'var', details: { virginityScore, marriageScore, childrenScore } };
   }
 
   function calcEducationScore(data) {
@@ -255,10 +278,10 @@ const MehirCalculator = (() => {
   // ---- TIER SYSTEM ----
 
   function getTier(grams) {
-    if (grams >= 1501) return { name: 'Elmas', emoji: '👑', class: 'diamond' };
-    if (grams >= 751)  return { name: 'Platin', emoji: '💎', class: 'platinum' };
-    if (grams >= 301)  return { name: 'Altın', emoji: '🥇', class: 'gold' };
-    if (grams >= 101)  return { name: 'Gümüş', emoji: '🥈', class: 'silver' };
+    if (grams >= 501)  return { name: 'Elmas', emoji: '👑', class: 'diamond' };
+    if (grams >= 251)  return { name: 'Platin', emoji: '💎', class: 'platinum' };
+    if (grams >= 101)  return { name: 'Altın', emoji: '🥇', class: 'gold' };
+    if (grams >= 51)   return { name: 'Gümüş', emoji: '🥈', class: 'silver' };
     return { name: 'Bronz', emoji: '🥉', class: 'bronze' };
   }
 
@@ -488,6 +511,23 @@ const MehirCalculator = (() => {
       adjustedEdu *= profile.coeffBoosters.educationDemote;
     }
 
+    // Tattoo effect: depends on conservatism level of the male viewer
+    // For female users (no preferences), tattoo slightly lowers the score (traditional default)
+    if (demographic.hasTattoo) {
+      if (profile) {
+        const conserv = formData.preferences?.conservatism;
+        if (conserv === 'cok') {
+          adjustedPhysical *= 0.80;
+          adjustedChar *= 0.85;
+        } else if (conserv === 'modern') {
+          adjustedPhysical *= 1.10;
+        }
+        // 'orta' → no change
+      } else {
+        adjustedPhysical *= 0.92;
+      }
+    }
+
     // Combine scores with category weights
     const combinedScore = (
       adjustedPhysical * weights.physical +
@@ -496,8 +536,7 @@ const MehirCalculator = (() => {
       adjustedChar * weights.character
     );
 
-    // Calculate multiplier: score maps ~0.4-1.5 range to a multiplier
-    const multiplier = Math.pow(combinedScore, 3.5) * 20;
+    const multiplier = Math.pow(combinedScore, 3.5) * 6.67;
 
     let totalGrams = Math.round(BASE_GOLD_GRAMS * multiplier);
     totalGrams = Math.max(MIN_GOLD_GRAMS, Math.min(MAX_GOLD_GRAMS, totalGrams));
@@ -552,9 +591,10 @@ const MehirCalculator = (() => {
     calculate,
     formatTL,
     formatNumber,
-    GOLD_PRICE_PER_GRAM,
+    get GOLD_PRICE_PER_GRAM() { return GOLD_PRICE_PER_GRAM; },
     BASE_GOLD_GRAMS,
-    getBMICoeff
+    getBMICoeff,
+    initGoldPrice
   };
 
 })();

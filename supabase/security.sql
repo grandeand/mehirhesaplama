@@ -1,15 +1,23 @@
--- 1. Score sınırı (örn: min 0, max 9.999.999 gram altın)
-ALTER TABLE public.leaderboard
-ADD CONSTRAINT score_limit CHECK (score >= 0 AND score <= 9999999);
+-- ============================================
+-- MEHIR HESAPLAMA - DATABASE SECURITY
+-- Applied via migrations. This file is reference only.
+-- ============================================
 
--- 2. İsim karakter sınırı (maximum 30 karakter)
-ALTER TABLE public.leaderboard
-ADD CONSTRAINT name_limit CHECK (char_length(name) <= 30);
+-- RLS is enabled on public.leaderboard (migration 20260412000001)
+-- Policies:
+--   SELECT: Everyone can read (leaderboard_select_all)
+--   INSERT: Everyone can insert (leaderboard_insert_anon)
+--   UPDATE: Only within 30 minutes of creation (leaderboard_update_recent)
+--   DELETE: Denied (no policy + REVOKE DELETE from anon/authenticated)
 
--- 3. Sosyal medya platform isimleri de saçma sapan uzun olmasın (max 50 karakter)
-ALTER TABLE public.leaderboard
-ADD CONSTRAINT social_length_limit CHECK (
-  (instagram IS NULL OR char_length(instagram) <= 50) AND
-  (twitter IS NULL OR char_length(twitter) <= 50) AND
-  (tiktok IS NULL OR char_length(tiktok) <= 50)
-);
+-- Trigger: protect_leaderboard_update
+--   Prevents modification of core fields (name, score, tier, gender)
+--   Prevents overwriting social fields once set (instagram, twitter, tiktok, email)
+
+-- Trigger: rate_limit_insert (migration 20260412000003)
+--   Prevents same name from inserting within 60 seconds
+
+-- CHECK constraints:
+--   score_limit: 0 <= score <= 9,999,999
+--   name_limit: char_length(name) <= 30
+--   social_length_limit: each social field <= 50 chars

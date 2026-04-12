@@ -10,6 +10,8 @@ const Leaderboard = (() => {
 
   let supabase = null;
   let lastRecordId = null;
+  const RATE_LIMIT_MS = 30000; // 30 seconds between saves
+  let lastSaveTime = 0;
 
   function init() {
     if (window.supabase) {
@@ -22,6 +24,13 @@ const Leaderboard = (() => {
   // Save a score to leaderboard
   async function saveScore(name, score, tier, gender, profileData) {
     if (!supabase) return null;
+
+    const now = Date.now();
+    if (now - lastSaveTime < RATE_LIMIT_MS) {
+      console.warn('Rate limited: too many saves');
+      return null;
+    }
+    lastSaveTime = now;
 
     try {
       const record = { name, score, tier, gender };
@@ -334,6 +343,8 @@ const Leaderboard = (() => {
     container.innerHTML = html;
   }
 
-  return { init, saveScore, updateProfile, getLastRecordId, getTop10, getSurrounding, renderLeaderboard, renderLandingLeaderboard, showSocialPopup };
+  function getClient() { return supabase; }
+
+  return { init, saveScore, updateProfile, getLastRecordId, getTop10, getSurrounding, renderLeaderboard, renderLandingLeaderboard, showSocialPopup, getClient };
 
 })();

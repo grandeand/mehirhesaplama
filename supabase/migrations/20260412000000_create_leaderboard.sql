@@ -1,0 +1,25 @@
+-- Initial schema for leaderboard table (reference only - table already exists)
+-- This migration is kept as documentation of the table structure.
+
+-- CREATE TABLE IF NOT EXISTS public.leaderboard (
+--   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+--   name TEXT NOT NULL,
+--   score INTEGER NOT NULL,
+--   tier TEXT NOT NULL,
+--   gender TEXT NOT NULL,
+--   created_at TIMESTAMPTZ DEFAULT now(),
+--   email TEXT,
+--   instagram TEXT,
+--   twitter TEXT,
+--   tiktok TEXT,
+--
+--   CONSTRAINT score_limit CHECK (score >= 0 AND score <= 9999999),
+--   CONSTRAINT name_limit CHECK (char_length(name) <= 30),
+--   CONSTRAINT social_length_limit CHECK (
+--     (instagram IS NULL OR char_length(instagram) <= 50) AND
+--     (twitter IS NULL OR char_length(twitter) <= 50) AND
+--     (tiktok IS NULL OR char_length(tiktok) <= 50)
+--   )
+-- );
+--
+-- CREATE INDEX idx_leaderboard_score ON public.leaderboard (score DESC);

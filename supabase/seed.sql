@@ -1,0 +1,2 @@
+-- Seed data is not needed for production.
+-- This file exists to prevent errors when running `supabase db reset`.

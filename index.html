@@ -1,21 +1,34 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Mehir Hesaplama | Senin Mehrin Ne Kadar? 💍</title>
   <meta name="description" content="Eğlenceli mehir hesaplama uygulaması! Fiziksel, demografik, eğitim ve karakter özelliklerine göre mehir miktarını gram altın cinsinden hesapla.">
   
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+  <!-- Google Fonts (preconnect + preload for faster rendering) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <!-- OG Tags for Social Sharing -->
   <meta property="og:title" content="Mehir Hesaplama | Senin Mehrin Ne Kadar? 💍">
   <meta property="og:description" content="Eğlenceli mehir hesaplama! Özelliklerini gir, senin değerini altın cinsinden öğren!">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="tr_TR">
+  <meta property="og:url" content="https://mehirhesapla.com">
+  <meta property="og:image" content="https://mehirhesapla.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Mehir Hesaplama | Senin Mehrin Ne Kadar? 💍">
   <meta name="twitter:description" content="Eğlenceli mehir hesaplama! Özelliklerini gir, senin değerini altın cinsinden öğren!">
+  <meta name="twitter:image" content="https://mehirhesapla.com/og-image.png">
   
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -85,7 +98,7 @@
         Leaderboard'da görünecek ismin
       </p>
       <div class="name-input-wrapper">
-        <input type="text" id="input-user-name" class="name-input" placeholder="Adınız..." maxlength="20" autocomplete="off">
+        <input type="text" id="input-user-name" class="name-input" placeholder="Adınız..." maxlength="30" autocomplete="off" aria-label="Adınız">
       </div>
       <button id="btn-name-next" class="btn-primary" disabled>
         Devam →
@@ -159,7 +172,7 @@
           <label class="form-label">
             <span class="label-emoji">💍</span> Evlenmek istediğin kadının adı
           </label>
-          <input type="text" id="input-partner-name" class="name-input" placeholder="Adı..." maxlength="20" autocomplete="off" style="width:100%">
+          <input type="text" id="input-partner-name" class="name-input" placeholder="Adı..." maxlength="30" autocomplete="off" style="width:100%" aria-label="Partner adı">
           <p class="form-hint">Leaderboard'da bu isim görünecek</p>
         </div>
 
@@ -176,7 +189,7 @@
     <div id="screen-wizard" class="screen">
       
       <!-- Progress Bar -->
-      <div class="progress-bar">
+      <div class="progress-bar" role="progressbar" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" aria-label="Adım ilerlemesi">
         <div class="progress-step active" data-step="0"></div>
         <div class="progress-step" data-step="1"></div>
         <div class="progress-step" data-step="2"></div>
@@ -200,7 +213,7 @@
             </label>
             <div class="slider-container">
               <div class="slider-value" id="val-age">25</div>
-              <input type="range" id="slider-age" min="18" max="60" value="25" data-suffix=" yaş">
+              <input type="range" id="slider-age" min="18" max="60" value="25" data-suffix=" yaş" aria-label="Yaş">
               <div class="slider-range">
                 <span>18</span>
                 <span>60</span>
@@ -214,14 +227,14 @@
               <label class="form-label">
                 <span class="label-emoji">📏</span> <span data-label-female="Boy" data-label-male="Boyu">Boy</span>
               </label>
-              <input type="number" id="input-height" class="number-input" placeholder="165" min="140" max="200">
+              <input type="number" id="input-height" class="number-input" placeholder="165" min="140" max="200" aria-label="Boy (cm)">
               <span class="input-unit">cm</span>
             </div>
             <div class="form-group">
               <label class="form-label">
                 <span class="label-emoji">⚖️</span> <span data-label-female="Kilo" data-label-male="Kilosu">Kilo</span>
               </label>
-              <input type="number" id="input-weight" class="number-input" placeholder="60" min="35" max="150">
+              <input type="number" id="input-weight" class="number-input" placeholder="60" min="35" max="150" aria-label="Kilo (kg)">
               <span class="input-unit">kg</span>
             </div>
           </div>
@@ -242,7 +255,7 @@
             </label>
             <div class="slider-container">
               <div class="slider-value">5</div>
-              <input type="range" id="slider-face" min="1" max="10" value="5" data-suffix="/10">
+              <input type="range" id="slider-face" min="1" max="10" value="5" data-suffix="/10" aria-label="Yüz güzelliği">
               <div class="slider-range">
                 <span>1 – Pek değil 😅</span>
                 <span>10 – Model 🔥</span>
@@ -360,6 +373,18 @@
             </div>
           </div>
 
+          <!-- Tattoo -->
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-emoji">🎨</span> <span data-label-female="Dövmen var mı?" data-label-male="Dövmesi var mı?">Dövmen var mı?</span>
+            </label>
+            <div class="chip-group" id="chips-tattoo">
+              <div class="chip selected" data-value="yok">❌ Yok</div>
+              <div class="chip" data-value="var">✅ Var</div>
+            </div>
+            <p class="form-hint">Muhafazakâr erkeklerde değer düşürür, modern erkeklerde artırır</p>
+          </div>
+
           <!-- Children -->
           <div class="form-group">
             <label class="form-label">
@@ -423,10 +448,10 @@
             </label>
             <div class="slider-container">
               <div class="slider-value">30.000 ₺</div>
-              <input type="range" id="slider-income" min="0" max="200000" value="30000" step="5000" data-suffix=" ₺" data-prefix="">
+              <input type="range" id="slider-income" min="0" max="500000" value="30000" step="5000" data-suffix=" ₺" data-prefix="" aria-label="Aylık gelir">
               <div class="slider-range">
                 <span>₺0</span>
-                <span>₺200.000+</span>
+                <span>₺500.000+</span>
               </div>
             </div>
           </div>
@@ -451,7 +476,7 @@
             </label>
             <div class="slider-container">
               <div class="slider-value">5/10</div>
-              <input type="range" id="slider-religion" min="1" max="10" value="5" data-suffix="/10">
+              <input type="range" id="slider-religion" min="1" max="10" value="5" data-suffix="/10" aria-label="Dindarlık">
               <div class="slider-range">
                 <span>1 – Laik</span>
                 <span>10 – Çok dindar</span>
@@ -466,7 +491,7 @@
             </label>
             <div class="slider-container">
               <div class="slider-value">5/10</div>
-              <input type="range" id="slider-housekeeping" min="1" max="10" value="5" data-suffix="/10">
+              <input type="range" id="slider-housekeeping" min="1" max="10" value="5" data-suffix="/10" aria-label="Ev hanımlığı">
               <div class="slider-range">
                 <span>1 – Yumurta bile yakar 🍳</span>
                 <span>10 – MasterChef 👨‍🍳</span>
@@ -481,7 +506,7 @@
             </label>
             <div class="slider-container">
               <div class="slider-value">5/10</div>
-              <input type="range" id="slider-morals" min="1" max="10" value="5" data-suffix="/10">
+              <input type="range" id="slider-morals" min="1" max="10" value="5" data-suffix="/10" aria-label="Ahlak ve karakter">
               <div class="slider-range">
                 <span>1 – Gelişime açık 😬</span>
                 <span>10 – Melek 😇</span>
@@ -496,7 +521,7 @@
             </label>
             <div class="slider-container">
               <div class="slider-value">5/10</div>
-              <input type="range" id="slider-sociality" min="1" max="10" value="5" data-suffix="/10">
+              <input type="range" id="slider-sociality" min="1" max="10" value="5" data-suffix="/10" aria-label="Sosyallik">
               <div class="slider-range">
                 <span>1 – İçine kapanık 🤫</span>
                 <span>10 – Hayat enerjisi 🎉</span>
@@ -665,9 +690,10 @@
 
   <!-- Scripts -->
   <script src="js/calculator.js"></script>
-  <script src="js/chart.js"></script>
   <script src="js/sharecard.js"></script>
   <script src="js/leaderboard.js"></script>
+  <script src="js/analytics.js"></script>
   <script src="js/app.js"></script>
+
 </body>
 </html>

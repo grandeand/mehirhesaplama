@@ -11,9 +11,20 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedGender = null; // 'male' or 'female'
   let malePreferences = null; // onboard answers for male users
   let userName = ''; // name for leaderboard
+  let lastResult = null; // calculation result (module-scoped)
 
   // Init Leaderboard (Supabase)
   Leaderboard.init();
+
+  // Init Analytics (uses same Supabase client)
+  const sbClient = Leaderboard.getClient();
+  if (sbClient) Analytics.init(sbClient);
+
+  // Fetch live gold price in background
+  MehirCalculator.initGoldPrice();
+
+  // Track page view
+  Analytics.track('page_view');
 
   // ---- DOM REFS ----
   const screens = {
@@ -43,7 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function createSparkles() {
     const container = document.querySelector('.sparkle-container');
     if (!container) return;
-    for (let i = 0; i < 20; i++) {
+    const count = window.innerWidth < 480 ? 10 : 20;
+    for (let i = 0; i < count; i++) {
       const sparkle = document.createElement('div');
       sparkle.className = 'sparkle';
       sparkle.style.left = Math.random() * 100 + '%';
@@ -84,6 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (i === stepIndex) p.classList.add('active');
     });
 
+    // Update progress bar aria
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) progressBar.setAttribute('aria-valuenow', stepIndex + 1);
+
     // Button states
     btnPrev.style.display = stepIndex === 0 ? 'none' : '';
     btnNext.textContent = stepIndex === totalSteps - 1 ? '✨ Hesapla' : 'Devam →';
@@ -92,15 +108,45 @@ document.addEventListener('DOMContentLoaded', () => {
     currentStep = stepIndex;
   }
 
-  // ---- CHIP SELECTION ----
+  // ---- CHIP SELECTION (with keyboard support) ----
   document.querySelectorAll('.chip-group').forEach(group => {
+    group.setAttribute('role', 'radiogroup');
+    group.querySelectorAll('.chip').forEach(chip => {
+      chip.setAttribute('role', 'radio');
+      chip.setAttribute('tabindex', chip.classList.contains('selected') ? '0' : '-1');
+      chip.setAttribute('aria-checked', chip.classList.contains('selected') ? 'true' : 'false');
+    });
+
     group.addEventListener('click', (e) => {
       const chip = e.target.closest('.chip');
       if (!chip) return;
-      group.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-      chip.classList.add('selected');
+      selectChip(group, chip);
+    });
+
+    group.addEventListener('keydown', (e) => {
+      if (!['ArrowRight', 'ArrowLeft', 'Enter', ' '].includes(e.key)) return;
+      e.preventDefault();
+      const chips = [...group.querySelectorAll('.chip:not(.hidden)')];
+      const idx = chips.indexOf(document.activeElement);
+      if (e.key === 'Enter' || e.key === ' ') {
+        if (idx >= 0) selectChip(group, chips[idx]);
+      } else {
+        const next = e.key === 'ArrowRight' ? (idx + 1) % chips.length : (idx - 1 + chips.length) % chips.length;
+        chips[next].focus();
+      }
     });
   });
+
+  function selectChip(group, chip) {
+    group.querySelectorAll('.chip').forEach(c => {
+      c.classList.remove('selected');
+      c.setAttribute('aria-checked', 'false');
+      c.setAttribute('tabindex', '-1');
+    });
+    chip.classList.add('selected');
+    chip.setAttribute('aria-checked', 'true');
+    chip.setAttribute('tabindex', '0');
+  }
 
   // ---- RANGE SLIDER VALUE DISPLAY ----
   document.querySelectorAll('input[type="range"]').forEach(slider => {
@@ -200,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
       virginity: getSelectedChipValue('chips-virginity') || 'evet',
       marriageHistory: getSelectedChipValue('chips-marriage') || 'ilk',
       children: parseInt(getSelectedChipValue('chips-children') || '0'),
+      tattoo: getSelectedChipValue('chips-tattoo') || 'yok',
 
       // Education
       education: getSelectedChipValue('chips-education') || 'lisans',
@@ -228,6 +275,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---- VALIDATION ----
   function validateStep(stepIndex) {
     const step = steps[stepIndex];
+
+    // Ensure all chip groups have a selection
     const chipGroups = step.querySelectorAll('.chip-group');
     for (const group of chipGroups) {
       if (!group.querySelector('.chip.selected')) {
@@ -235,7 +284,42 @@ document.addEventListener('DOMContentLoaded', () => {
         if (first) first.classList.add('selected');
       }
     }
+
+    // Step 0 (Physical): require height and weight
+    if (stepIndex === 0) {
+      const h = parseFloat(heightInput?.value);
+      const w = parseFloat(weightInput?.value);
+      if (!h || h < 140 || h > 200) {
+        heightInput?.focus();
+        heightInput?.classList.add('input-error');
+        setTimeout(() => heightInput?.classList.remove('input-error'), 1500);
+        showToast('Lütfen geçerli bir boy gir (140-200 cm)');
+        return false;
+      }
+      if (!w || w < 35 || w > 150) {
+        weightInput?.focus();
+        weightInput?.classList.add('input-error');
+        setTimeout(() => weightInput?.classList.remove('input-error'), 1500);
+        showToast('Lütfen geçerli bir kilo gir (35-150 kg)');
+        return false;
+      }
+    }
+
     return true;
+  }
+
+  // ---- TOAST NOTIFICATION ----
+  function showToast(message) {
+    let toast = document.getElementById('app-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'app-toast';
+      toast.className = 'app-toast';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('visible');
+    setTimeout(() => toast.classList.remove('visible'), 3000);
   }
 
   // ---- CONFETTI ----
@@ -299,8 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Confetti
     setTimeout(launchConfetti, 300);
 
-    // Store for sharing
-    window._lastResult = result;
+    lastResult = result;
 
     // ---- LEADERBOARD: Save & Display ----
     try {
@@ -318,6 +401,10 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     } catch (e) {
       console.error('Leaderboard error:', e);
+      const lbContainer = document.getElementById('leaderboard-container');
+      if (lbContainer) {
+        lbContainer.innerHTML = '<p style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:var(--space-lg)">Leaderboard yüklenemedi. İnternet bağlantını kontrol et.</p>';
+      }
     }
   }
 
@@ -342,18 +429,22 @@ document.addEventListener('DOMContentLoaded', () => {
   let shareCanvas = null;
 
   function generateShareCard() {
-    if (!window._lastResult || !shareCanvas) {
-      shareCanvas = ShareCard.generate(window._lastResult, userName, selectedGender);
+    if (!lastResult || !shareCanvas) {
+      shareCanvas = ShareCard.generate(lastResult, userName, selectedGender);
     }
     return shareCanvas;
   }
 
   // Main share button — uses Web Share API on mobile
   document.getElementById('share-native')?.addEventListener('click', async () => {
+    Analytics.track('share_click', { tier: lastResult?.tier?.class });
     const canvas = generateShareCard();
-    const shared = await ShareCard.shareNative(canvas, window._lastResult, userName);
+    const shared = await ShareCard.shareNative(canvas, lastResult, userName);
     if (!shared) {
       ShareCard.download(canvas, userName);
+      Analytics.track('share_download');
+    } else {
+      Analytics.track('share_native_success');
     }
   });
 
@@ -390,16 +481,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const success = await Leaderboard.updateProfile(profileData);
 
     if (success) {
+      Analytics.track('profile_saved');
       btn.textContent = '✅ Kaydedildi!';
 
       // Re-render leaderboard with updated social data
       try {
         const top10 = await Leaderboard.getTop10();
-        const surrounding = await Leaderboard.getSurrounding(window._lastResult.totalGrams, userName);
+        const surrounding = await Leaderboard.getSurrounding(lastResult.totalGrams, userName);
         Leaderboard.renderLeaderboard('leaderboard-container', top10, surrounding, {
           name: userName,
-          score: window._lastResult.totalGrams,
-          tier: window._lastResult.tier.class
+          score: lastResult.totalGrams,
+          tier: lastResult.tier.class
         });
       } catch (e) { console.error(e); }
 
@@ -411,6 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       btn.textContent = '❌ Hata! Tekrar dene';
       btn.disabled = false;
+      showToast('Profil kaydedilemedi. Tekrar dene.');
       setTimeout(() => { btn.textContent = originalText; }, 2000);
     }
   });
@@ -419,11 +512,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Landing → Gender
   btnStart.addEventListener('click', () => {
+    Analytics.track('funnel_start');
     showScreen('gender');
   });
 
   // Gender: Female → Name screen
   btnGenderFemale.addEventListener('click', () => {
+    Analytics.track('gender_select', { gender: 'female' });
     selectedGender = 'female';
     malePreferences = null;
     updateLabelsForGender('female');
@@ -457,6 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Gender: Male → Onboard
   btnGenderMale.addEventListener('click', () => {
+    Analytics.track('gender_select', { gender: 'male' });
     selectedGender = 'male';
     updateLabelsForGender('male');
     document.querySelectorAll('.male-only').forEach(el => el.classList.remove('hidden'));
@@ -485,15 +581,21 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   btnNext.addEventListener('click', () => {
-    validateStep(currentStep);
+    if (!validateStep(currentStep)) return;
 
     if (currentStep < totalSteps - 1) {
+      Analytics.track('wizard_step', { step: currentStep + 1, gender: selectedGender });
       showStep(currentStep + 1);
       screens.wizard.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      // Calculate!
       const data = getFormData();
       const result = MehirCalculator.calculate(data);
+      Analytics.track('calculation_done', {
+        gender: selectedGender,
+        tier: result.tier.class,
+        grams: result.totalGrams,
+        age: data.age
+      });
       showResults(result);
     }
   });
@@ -504,9 +606,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Store initial default chip selections for restart
+  const defaultChips = new Map();
+  document.querySelectorAll('.chip-group').forEach(group => {
+    const selected = group.querySelector('.chip.selected');
+    if (selected) defaultChips.set(group.id, selected.dataset.value);
+  });
+
   btnRestart.addEventListener('click', () => {
-    // Reset form
+    Analytics.track('restart');
+    // Reset chip selections to defaults
     document.querySelectorAll('.chip.selected').forEach(c => c.classList.remove('selected'));
+    defaultChips.forEach((value, groupId) => {
+      const chip = document.querySelector(`#${groupId} .chip[data-value="${value}"]`);
+      if (chip) chip.classList.add('selected');
+    });
+
+    // Reset sliders
     document.querySelectorAll('input[type="range"]').forEach(s => {
       s.value = s.defaultValue;
       s.dispatchEvent(new Event('input'));
@@ -518,6 +634,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inputPartnerName) inputPartnerName.value = '';
     if (btnNameNext) btnNameNext.disabled = true;
 
+    // Reset BMI display
+    if (bmiDisplay) bmiDisplay.style.display = 'none';
+
     // Reset results bars
     document.querySelectorAll('.category-bar-fill').forEach(b => b.style.width = '0%');
 
@@ -525,9 +644,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const lbContainer = document.getElementById('leaderboard-container');
     if (lbContainer) lbContainer.innerHTML = '';
 
+    // Reset state
     selectedGender = null;
     malePreferences = null;
     userName = '';
+    lastResult = null;
+    shareCanvas = null;
+
     showScreen('landing');
     currentStep = 0;
     loadLandingLeaderboard();
